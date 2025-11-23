@@ -18,7 +18,15 @@
       "parentId": "wrk_api_agencia",
       "name": "Environment",
       "data": {
-        "base_url": "http://localhost:8080"
+        "base_url": "http://localhost:8080",
+        "admin": {
+          "username": "admin",
+          "password": "admin"
+        },
+        "user": {
+          "username": "user",
+          "password": "password"
+        }
       }
     },
 
@@ -29,6 +37,11 @@
       "name": "Create Destination",
       "method": "POST",
       "url": "{{ base_url }}/api/destinations",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ admin.username }}",
+        "password": "{{ admin.password }}"
+      },
       "body": {
         "mimeType": "application/json",
         "text": "{\n  \"name\": \"Praia Azul\",\n  \"location\": \"Bahia\",\n  \"description\": \"Resort all-inclusive\",\n  \"availablePackages\": 10\n}"
@@ -45,6 +58,11 @@
       "name": "List Destinations",
       "method": "GET",
       "url": "{{ base_url }}/api/destinations",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ user.username }}",
+        "password": "{{ user.password }}"
+      },
       "body": {}
     },
 
@@ -55,6 +73,11 @@
       "name": "Search by name (query)",
       "method": "GET",
       "url": "{{ base_url }}/api/destinations?name=Praia",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ user.username }}",
+        "password": "{{ user.password }}"
+      },
       "body": {}
     },
 
@@ -65,6 +88,11 @@
       "name": "Get Destination by ID",
       "method": "GET",
       "url": "{{ base_url }}/api/destinations/1",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ user.username }}",
+        "password": "{{ user.password }}"
+      },
       "body": {}
     },
 
@@ -75,6 +103,11 @@
       "name": "Update Destination (PUT)",
       "method": "PUT",
       "url": "{{ base_url }}/api/destinations/1",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ admin.username }}",
+        "password": "{{ admin.password }}"
+      },
       "body": {
         "mimeType": "application/json",
         "text": "{\n  \"name\": \"Praia Azul - Atualizada\",\n  \"location\": \"Bahia\",\n  \"description\": \"Resort all-inclusive - novo texto\",\n  \"availablePackages\": 8\n}"
@@ -91,6 +124,11 @@
       "name": "Rate Destination (PATCH)",
       "method": "PATCH",
       "url": "{{ base_url }}/api/destinations/1/rating?score=9",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ admin.username }}",
+        "password": "{{ admin.password }}"
+      },
       "body": {}
     },
 
@@ -101,6 +139,11 @@
       "name": "Reserve Packages",
       "method": "POST",
       "url": "{{ base_url }}/api/destinations/1/reservations",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ user.username }}",
+        "password": "{{ user.password }}"
+      },
       "body": {
         "mimeType": "application/json",
         "text": "{\n  \"customerName\": \"Joao\",\n  \"quantity\": 2\n}"
@@ -117,6 +160,11 @@
       "name": "Delete Destination",
       "method": "DELETE",
       "url": "{{ base_url }}/api/destinations/1",
+      "authentication": {
+        "type": "basic",
+        "username": "{{ admin.username }}",
+        "password": "{{ admin.password }}"
+      },
       "body": {}
     }
   ]

@@ -21,6 +21,50 @@ No diretório do projeto rode:
 mvn spring-boot:run
 ```
 
+Rodando com Docker / Docker Compose
+
+Pré-requisitos: Docker e Docker Compose instalados.
+
+1. Construir e subir os serviços (Postgres + app):
+
+```bash
+docker compose up --build
+```
+
+Isso vai:
+- subir um container `db` (Postgres) e um container `app` (sua aplicação Spring Boot construída a partir do `Dockerfile`).
+- a aplicação usará as variáveis de ambiente configuradas em `docker-compose.yml` para conectar no banco.
+
+2. Parar os serviços:
+
+```bash
+docker compose down
+```
+
+3. Logs úteis (em outro terminal):
+
+```bash
+docker compose logs -f app
+docker compose logs -f db
+```
+
+Credenciais e usuários iniciais
+- Postgres: `postgres` / `123123` (conforme `docker-compose.yml`).
+- Usuários de aplicação (seed): `admin` / `admin` (ROLE_ADMIN + ROLE_USER) e `user` / `password` (ROLE_USER).
+
+Testes rápidos (após a aplicação subir):
+
+Listar destinos (usuário):
+```bash
+curl -u user:password http://localhost:8080/api/destinations
+```
+
+Criar destino (admin):
+```bash
+curl -u admin:admin -H "Content-Type: application/json" -d '{"name":"Praia X","location":"Região Y","description":"...","availablePackages":10}' -X POST http://localhost:8080/api/destinations
+```
+
+
 Teste via curl (exemplos)
 
 Criar destino:
