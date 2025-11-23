@@ -1,0 +1,123 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-11-17T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2025.5.0",
+  "resources": [
+    {
+      "_id": "wrk_api_agencia",
+      "_type": "workspace",
+      "name": "API Agência de Viagens",
+      "description": "Coleção de requests para testar a API de destinos",
+      "scope": "collection"
+    },
+
+    {
+      "_id": "env_local",
+      "_type": "environment",
+      "parentId": "wrk_api_agencia",
+      "name": "Environment",
+      "data": {
+        "base_url": "http://localhost:8080"
+      }
+    },
+
+    {
+      "_id": "req_create_destination",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "Create Destination",
+      "method": "POST",
+      "url": "{{ base_url }}/api/destinations",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Praia Azul\",\n  \"location\": \"Bahia\",\n  \"description\": \"Resort all-inclusive\",\n  \"availablePackages\": 10\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+
+    {
+      "_id": "req_list_destinations",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "List Destinations",
+      "method": "GET",
+      "url": "{{ base_url }}/api/destinations",
+      "body": {}
+    },
+
+    {
+      "_id": "req_search_by_name",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "Search by name (query)",
+      "method": "GET",
+      "url": "{{ base_url }}/api/destinations?name=Praia",
+      "body": {}
+    },
+
+    {
+      "_id": "req_get_destination",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "Get Destination by ID",
+      "method": "GET",
+      "url": "{{ base_url }}/api/destinations/1",
+      "body": {}
+    },
+
+    {
+      "_id": "req_update_destination",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "Update Destination (PUT)",
+      "method": "PUT",
+      "url": "{{ base_url }}/api/destinations/1",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Praia Azul - Atualizada\",\n  \"location\": \"Bahia\",\n  \"description\": \"Resort all-inclusive - novo texto\",\n  \"availablePackages\": 8\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+
+    {
+      "_id": "req_rate_destination",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "Rate Destination (PATCH)",
+      "method": "PATCH",
+      "url": "{{ base_url }}/api/destinations/1/rating?score=9",
+      "body": {}
+    },
+
+    {
+      "_id": "req_reserve_destination",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "Reserve Packages",
+      "method": "POST",
+      "url": "{{ base_url }}/api/destinations/1/reservations",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"customerName\": \"Joao\",\n  \"quantity\": 2\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+
+    {
+      "_id": "req_delete_destination",
+      "_type": "request",
+      "parentId": "wrk_api_agencia",
+      "name": "Delete Destination",
+      "method": "DELETE",
+      "url": "{{ base_url }}/api/destinations/1",
+      "body": {}
+    }
+  ]
+}

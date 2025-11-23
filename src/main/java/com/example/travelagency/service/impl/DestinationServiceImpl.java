@@ -4,59 +4,55 @@ import com.example.travelagency.dto.DestinationRequest;
 import com.example.travelagency.dto.ReservationRequest;
 import com.example.travelagency.dto.ReservationResponse;
 import com.example.travelagency.model.Destination;
+import com.example.travelagency.repository.DestinationRepository;
 import com.example.travelagency.service.DestinationService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.springframework.http.HttpStatus.*;
 
 @Service
+@Transactional
 public class DestinationServiceImpl implements DestinationService {
 
-    private final Map<Long, Destination> storage = new ConcurrentHashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(0);
+    private final DestinationRepository repository;
+
+    public DestinationServiceImpl(DestinationRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public Destination create(DestinationRequest request) {
-        long id = idCounter.incrementAndGet();
-        Destination d = new Destination(id,
-                request.getName(),
-                request.getLocation(),
-                request.getDescription(),
-                request.getAvailablePackages() != null ? request.getAvailablePackages() : 0);
-        storage.put(id, d);
-        return d;
+        Destination d = new Destination();
+        d.setName(request.getName());
+        d.setLocation(request.getLocation());
+        d.setDescription(request.getDescription());
+        d.setAvailablePackages(request.getAvailablePackages() != null ? request.getAvailablePackages() : 0);
+        d.setAverageRating(0.0);
+        d.setRatingCount(0);
+        return repository.save(d);
     }
 
     @Override
     public List<Destination> list(Optional<String> name, Optional<String> location) {
-        List<Destination> result = new ArrayList<>();
-        for (Destination d : storage.values()) {
-            boolean matches = true;
-            if (name.isPresent()) {
-                matches &= d.getName() != null && d.getName().toLowerCase().contains(name.get().toLowerCase());
-            }
-            if (location.isPresent()) {
-                matches &= d.getLocation() != null && d.getLocation().toLowerCase().contains(location.get().toLowerCase());
-            }
-            if (matches) result.add(d);
+        if (name.isPresent() && location.isPresent()) {
+            return repository.findByNameContainingIgnoreCaseAndLocationContainingIgnoreCase(name.get(), location.get());
+        } else if (name.isPresent()) {
+            return repository.findByNameContainingIgnoreCase(name.get());
+        } else if (location.isPresent()) {
+            return repository.findByLocationContainingIgnoreCase(location.get());
         }
-        return result;
+        return repository.findAll();
     }
 
     @Override
     public Destination getById(Long id) {
-        Destination d = storage.get(id);
-        if (d == null) throw new ResponseStatusException(NOT_FOUND, "Destination not found");
-        return d;
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Destination not found"));
     }
 
     @Override
@@ -66,14 +62,13 @@ public class DestinationServiceImpl implements DestinationService {
         if (request.getLocation() != null) existing.setLocation(request.getLocation());
         if (request.getDescription() != null) existing.setDescription(request.getDescription());
         if (request.getAvailablePackages() != null) existing.setAvailablePackages(request.getAvailablePackages());
-        storage.put(id, existing);
-        return existing;
+        return repository.save(existing);
     }
 
     @Override
     public void delete(Long id) {
-        Destination removed = storage.remove(id);
-        if (removed == null) throw new ResponseStatusException(NOT_FOUND, "Destination not found");
+        if (!repository.existsById(id)) throw new ResponseStatusException(NOT_FOUND, "Destination not found");
+        repository.deleteById(id);
     }
 
     @Override
@@ -87,8 +82,7 @@ public class DestinationServiceImpl implements DestinationService {
             d.setRatingCount(newCount);
             d.setAverageRating(total / newCount);
         }
-        storage.put(id, d);
-        return d;
+        return repository.save(d);
     }
 
     @Override
@@ -101,7 +95,7 @@ public class DestinationServiceImpl implements DestinationService {
             }
             d.setAvailablePackages(d.getAvailablePackages() - qty);
         }
-        storage.put(id, d);
+        repository.save(d);
         String reservationId = UUID.randomUUID().toString();
         String msg = "Reserved " + request.getQuantity() + " package(s) for destination " + id;
         return new ReservationResponse(reservationId, id, msg);

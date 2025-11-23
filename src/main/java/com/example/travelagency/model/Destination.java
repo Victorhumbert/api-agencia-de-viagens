@@ -1,15 +1,24 @@
 package com.example.travelagency.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "destinations")
 public class Destination {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String location;
+    @Column(length = 2000)
     private String description;
     private double averageRating;
     private int ratingCount;
     private int availablePackages;
 
-    public Destination() {}
+    public Destination() {
+    }
 
     public Destination(Long id, String name, String location, String description, int availablePackages) {
         this.id = id;
